@@ -74,10 +74,11 @@ var ii = {
       this.destY = destY;
     };
 
-    this.setAlphaDestination = function(destAlpha) {
+    this.setAlphaDestination = function(destAlpha, alphaModifier) {
       'use strict';
 
       this.destAlpha = destAlpha;
+      this.alphaModifier = alphaModifier;
     };
 
     this.updateMove = function() {
@@ -105,7 +106,7 @@ var ii = {
       'use strict';
 
       if (Math.abs(this.alpha - this.destAlpha) > ii.epsilon) {
-        var velocity = Math.abs(this.alpha - this.destAlpha) / (ii.alphaSpacing / 16);
+        var velocity = (Math.abs(this.alpha - this.destAlpha) / (ii.alphaSpacing / 16)) * this.alphaModifier;
         var dirAlpha = (this.alpha > this.destAlpha) ? -velocity : velocity;
         this.alpha += dirAlpha;
       } else {
@@ -157,9 +158,9 @@ var ii = {
           ii.points[col * ii.levelSize + i].y + movementOffset
         );
       }
-      ii.points[col * ii.levelSize].setAlphaDestination(0);
+      ii.points[col * ii.levelSize].setAlphaDestination(0, 1);
       ii.points[ii.tempPointId].setMoveDestination(ii.points[ii.tempPointId].x, ii.points[ii.tempPointId].y + movementOffset);
-      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing);
+      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing, 1);
 
       var temp = ii.levelData[col][0];
       for (var i = 0; i < ii.levelSize - 1; i++) {
@@ -176,9 +177,9 @@ var ii = {
           ii.points[col * ii.levelSize + i].y + movementOffset
         );
       }
-      ii.points[col * ii.levelSize + ii.levelSize - 1].setAlphaDestination(0);
+      ii.points[col * ii.levelSize + ii.levelSize - 1].setAlphaDestination(0, 1);
       ii.points[ii.tempPointId].setMoveDestination(ii.points[ii.tempPointId].x, ii.points[ii.tempPointId].y + movementOffset);
-      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing);
+      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing, 1);
 
       var temp = ii.levelData[col][ii.levelSize - 1];
       for (var i = ii.levelSize - 1; i > 0; i--) {
@@ -223,9 +224,9 @@ var ii = {
           ii.points[row + ii.levelSize * i].y
         );
       }
-      ii.points[row + ii.levelSize * (ii.levelSize - 1)].setAlphaDestination(0);
+      ii.points[row + ii.levelSize * (ii.levelSize - 1)].setAlphaDestination(0, 1);
       ii.points[ii.tempPointId].setMoveDestination(ii.points[ii.tempPointId].x + movementOffset, ii.points[ii.tempPointId].y);
-      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing);
+      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing, 1);
 
       var temp = ii.levelData[ii.levelSize - 1][row];
       for (var i = ii.levelSize - 1; i > 0; i--) {
@@ -241,9 +242,9 @@ var ii = {
           ii.points[row + ii.levelSize * i].y
         );
       }
-      ii.points[row].setAlphaDestination(0);
+      ii.points[row].setAlphaDestination(0, 1);
       ii.points[ii.tempPointId].setMoveDestination(ii.points[ii.tempPointId].x + movementOffset, ii.points[ii.tempPointId].y);
-      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing);
+      ii.points[ii.tempPointId].setAlphaDestination(ii.alphaSpacing, 1);
 
       var temp = ii.levelData[0][row];
       for (var i = 0; i < ii.levelSize - 1; i++) {
@@ -263,7 +264,6 @@ var ii = {
           ii.stageOffsetX + i * ii.circleSpacing,
           ii.stageOffsetY + j * ii.circleSpacing,
           (i + j) % 2,
-          //ii.circleSpacing /* hack, makes alpha synchronized with movement */
           0
         ));
 
@@ -335,7 +335,7 @@ var ii = {
 
     for (var i = 0; i < ii.points.length; i++) {
       ii.points[i].alpha = 0;
-      ii.points[i].setAlphaDestination(ii.alphaSpacing);
+      ii.points[i].setAlphaDestination(ii.alphaSpacing, 0.25);
     }
   },
 
@@ -391,23 +391,8 @@ var ii = {
       var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'up');
-      console.log(ii.checkWin());
 
-      if (ii.checkWin()) {
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].setAlphaDestination(0);
-        }
-
-        ii.createLevel();
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].alpha = 0;
-        }
-        setTimeout(1000, function() {
-          for (var i = 0; i < ii.points.length; i++) {
-            ii.points[i].setAlphaDestination(ii.alphaSpacing);
-          }
-        });
-      }
+      ii.checkWin();
     });
 
     Hammertime.on('swipedown', function(event) {
@@ -418,23 +403,8 @@ var ii = {
       var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'down');
-      console.log(ii.checkWin());
 
-      if (ii.checkWin()) {
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].setAlphaDestination(0);
-        }
-
-        ii.createLevel();
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].alpha = 0;
-        }
-        setTimeout(1000, function() {
-          for (var i = 0; i < ii.points.length; i++) {
-            ii.points[i].setAlphaDestination(ii.alphaSpacing);
-          }
-        });
-      }
+      ii.checkWin();
     });
 
     Hammertime.on('swipeleft', function(event) {
@@ -445,23 +415,8 @@ var ii = {
       var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'left');
-      console.log(ii.checkWin());
 
-      if (ii.checkWin()) {
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].setAlphaDestination(0);
-        }
-
-        ii.createLevel();
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].alpha = 0;
-        }
-        setTimeout(1000, function() {
-          for (var i = 0; i < ii.points.length; i++) {
-            ii.points[i].setAlphaDestination(ii.alphaSpacing);
-          }
-        });
-      }
+      ii.checkWin();
     });
 
     Hammertime.on('swiperight', function(event) {
@@ -472,23 +427,8 @@ var ii = {
       var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'right');
-      console.log(ii.checkWin());
 
-      if (ii.checkWin()) {
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].setAlphaDestination(0);
-        }
-
-        ii.createLevel();
-        for (var i = 0; i < ii.points.length; i++) {
-          ii.points[i].alpha = 0;
-        }
-        setTimeout(1000, function() {
-          for (var i = 0; i < ii.points.length; i++) {
-            ii.points[i].setAlphaDestination(ii.alphaSpacing);
-          }
-        });
-      }
+      ii.checkWin();
     });
 
     ii.resize();
@@ -497,6 +437,7 @@ var ii = {
   },
 
   checkWin: function() {
+    var won = false;
     var countNeighbours = function(x, y, type) {
       var res = 0;
       if ((x - 1 >= 0) && (ii.levelData[x - 1][y] == type)) res++;
@@ -509,12 +450,34 @@ var ii = {
     for (var i = 0; i < ii.levelSize; i++) {
       for (var j = 0; j < ii.levelSize; j++) {
         if (countNeighbours(i, j, ii.levelData[i][j]) > 0) {
-          return false;
+          won = false;
+          return;
         }
       }
     }
 
-    return true;
+    won = true;
+
+    for (var i = 0; i < ii.points.length; i++) {
+      ii.points[i].setAlphaDestination(0, 1);
+    }
+
+    setTimeout(function() {
+      ii.createLevel();
+      for (var i = 0; i < ii.points.length; i++) {
+        ii.points[i].alpha = 0;
+        ii.points[i].setAlphaDestination(ii.alphaSpacing, 1);
+      }
+    }, 1000);
+
+    setTimeout(function() {
+      for (var i = 0; i < ii.points.length; i++) {
+        ii.points[i].setAlphaDestination(ii.alphaSpacing, 1);
+      }
+      console.log('BAAAM');
+    }, 2000);
+
+    return won;
   },
 
   updatePoints: function() {
