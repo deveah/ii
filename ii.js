@@ -40,7 +40,7 @@ var ii = {
   /*
    *  one of: 'title', 'game'.
    */
-  currentStage: 'game',
+  currentStage: 'title',
 
   Point: function(x, y, color, alpha) {
     'use strict';
@@ -320,6 +320,25 @@ var ii = {
 
   },
 
+  updateLevelSize: function(levelSize) {
+    ii.levelSize = levelSize;
+    ii.circleSpacing = Math.floor(ii.width / (ii.levelSize + 1));
+    ii.alphaSpacing = ii.circleSpacing * 3;
+    ii.circleRadius = Math.floor(ii.circleSpacing * 0.35);
+    ii.stageOffsetX = Math.floor(ii.width / (ii.levelSize + 1)); //+ (ii.levelSize - 4) * ii.circleSpacing;
+    ii.stageOffsetY = Math.floor(ii.height * 0.25) + ii.circleRadius;
+
+    ii.tempPointId = (ii.levelSize * ii.levelSize);
+
+    ii.createLevel();
+    ii.updatePoints();
+
+    for (var i = 0; i < ii.points.length; i++) {
+      ii.points[i].alpha = 0;
+      ii.points[i].setAlphaDestination(ii.alphaSpacing);
+    }
+  },
+
   init: function() {
     'use strict';
 
@@ -329,22 +348,40 @@ var ii = {
     ii.canvas.width = ii.width;
     ii.canvas.height = ii.height;
 
-    ii.circleSpacing = Math.floor(ii.width / (ii.levelSize + 1));
-    ii.alphaSpacing = ii.circleSpacing * 4;
-    ii.circleRadius = Math.floor(ii.circleSpacing * 0.35);
-    ii.stageOffsetX = Math.floor(ii.width / (ii.levelSize + 1)); //+ (ii.levelSize - 4) * ii.circleSpacing;
-    ii.stageOffsetY = Math.floor(ii.height * 0.25) + ii.circleRadius;
-
-    ii.tempPointId = (ii.levelSize * ii.levelSize);
-
-    ii.createLevel();
-    for (var i = 0; i < ii.points.length; i++) {
-      ii.points[i].alpha = 0;
-      ii.points[i].setAlphaDestination(ii.alphaSpacing);
-    }
+    ii.updateLevelSize(4);
 
     var Hammertime = new Hammer(ii.canvas);
     Hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL, threshold: 0, velocity: 0.0 });
+    Hammertime.get('tap').set({ pointers: 1, taps: 1 });
+
+    Hammertime.on('tap', function(event) {
+      var yValues = [];
+
+      for (var i = 4; i < 8; i++) {
+        yValues[i - 4] = ii.height / 2
+          + (i - 3) * ii.circleSpacing
+          - ii.circleSpacing / (4 / (i - 5))
+          - ii.circleSpacing;
+      }
+
+      if ((event.srcEvent.clientY > yValues[0]) &&
+          (event.srcEvent.clientY < yValues[1])) {
+        ii.updateLevelSize(4);
+        ii.currentStage = 'game';
+      }
+
+      if ((event.srcEvent.clientY > yValues[1]) &&
+          (event.srcEvent.clientY < yValues[2])) {
+        ii.updateLevelSize(5);
+        ii.currentStage = 'game';
+      }
+
+      if ((event.srcEvent.clientY > yValues[2]) &&
+          (event.srcEvent.clientY < yValues[3])) {
+        ii.updateLevelSize(6);
+        ii.currentStage = 'game';
+      }
+    });
 
     Hammertime.on('swipeup', function(event) {
       if (ii.currentStage != 'game') {
@@ -515,6 +552,10 @@ var ii = {
   update: function() {
     'use strict';
 
+    if (ii.currentStage != 'game') {
+      return;
+    }
+
     for (var i = 0; i < ii.points.length; i++) {
       ii.points[i].update();
     }
@@ -545,7 +586,7 @@ var ii = {
 
     for (var i = 4; i <= 6; i++) {
       for (var j = 0; j < i; j++) {
-        ii.drawAntialiasedCircle(
+        /*ii.drawAntialiasedCircle(
           ii.width * 0.1 + j * ii.circleSpacing * (4 / i) + ii.circleSpacing * (4 / i) / 2,
           ii.height / 2 + (i - 3) * ii.circleSpacing - ii.circleSpacing / (4 / (i - 5)) - ii.circleSpacing / 2,
           ii.circleRadius * (4 / i),
@@ -554,6 +595,20 @@ var ii = {
           (j % 2) ?
             ii.alphaSpacing * (0.5 + 0.5 * Math.sin(2.0 * Math.PI * (ii.currentTimeframe * (i + j / 100) / 500))) :
             ii.alphaSpacing * (0.5 + 0.5 * Math.cos(2.0 * Math.PI * (ii.currentTimeframe * (i + j / 100) / 500)))
+        );*/
+        ii.drawAntialiasedCircle(
+          ii.width * 0.1
+            + j * ii.circleSpacing * (4 / i)
+            + ii.circleSpacing * (4 / i) / 2
+            + (ii.circleSpacing * (4 / i) / 2) * Math.sin(2.0 * Math.PI * (ii.currentTimeframe / 500)),
+          ii.height / 2
+            + (i - 3) * ii.circleSpacing
+            - ii.circleSpacing / (4 / (i - 5))
+            - ii.circleSpacing / 2,
+          ii.circleRadius * (4 / i),
+          (j % 2) ? ii.hotColor : ii.coldColor,
+          'white',
+          ii.alphaSpacing
         );
       }
     }
