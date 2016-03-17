@@ -1,13 +1,12 @@
 
 /*
  *  TODO
- *  1. Actual input
- *  2. Win condition
  *  3. Solver and hints
- *  4. 5x5, 6x6 level sizes
 */
 
 var ii = {
+
+  currentTimeframe: 0,
 
   epsilon: 1,
   animationSpeed: 4,
@@ -37,6 +36,11 @@ var ii = {
 
   hotColor: 'rgb(255, 53, 94)', /* Radical Red */
   coldColor: 'rgb(93, 138, 168)', /* Air Force Blue */
+
+  /*
+   *  one of: 'title', 'game'.
+   */
+  currentStage: 'game',
 
   Point: function(x, y, color, alpha) {
     'use strict';
@@ -118,6 +122,14 @@ var ii = {
   },
 
   moveColumn: function(col, direction) {
+    if (ii.currentStage != 'game') {
+      return;
+    }
+
+    if ((col < 0) || (col >= ii.levelSize)) {
+      return;
+    }
+
     if (direction == 'up') {
       ii.points[ii.tempPointId] = new ii.Point(
         ii.stageOffsetX + col * ii.circleSpacing,
@@ -177,6 +189,14 @@ var ii = {
   },
 
   moveRow: function(row, direction) {
+    if (ii.currentStage != 'game') {
+      return;
+    }
+
+    if ((row < 0) || (row >= ii.levelSize)) {
+      return;
+    }
+
     if (direction == 'right') {
       ii.points[ii.tempPointId] = new ii.Point(
         ii.stageOffsetX - ii.circleSpacing,
@@ -327,6 +347,10 @@ var ii = {
     Hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL, threshold: 0, velocity: 0.0 });
 
     Hammertime.on('swipeup', function(event) {
+      if (ii.currentStage != 'game') {
+        return;
+      }
+
       var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'up');
@@ -350,6 +374,10 @@ var ii = {
     });
 
     Hammertime.on('swipedown', function(event) {
+      if (ii.currentStage != 'game') {
+        return;
+      }
+
       var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'down');
@@ -373,6 +401,10 @@ var ii = {
     });
 
     Hammertime.on('swipeleft', function(event) {
+      if (ii.currentStage != 'game') {
+        return;
+      }
+
       var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'left');
@@ -396,6 +428,10 @@ var ii = {
     });
 
     Hammertime.on('swiperight', function(event) {
+      if (ii.currentStage != 'game') {
+        return;
+      }
+
       var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'right');
@@ -470,6 +506,7 @@ var ii = {
   loop: function() {
     'use strict';
 
+    ii.currentTimeframe++;
     requestAnimationFrame(ii.loop);
     ii.update();
     ii.render();
@@ -483,7 +520,7 @@ var ii = {
     }
   },
 
-  render: function() {
+  renderGameScreen: function() {
     'use strict';
 
     ii.ctx.clearRect(0, 0, ii.width, ii.height);
@@ -494,6 +531,43 @@ var ii = {
 
     for (var i = 0; i < ii.points.length; i++) {
       ii.points[i].draw();
+    }
+  },
+
+  renderTitleScreen: function() {
+    'use strict';
+
+    ii.ctx.clearRect(0, 0, ii.width, ii.height);
+
+    ii.ctx.fillStyle = 'black';
+    ii.ctx.font = (ii.height / 3) + 'px Open Sans';
+    ii.ctx.fillText('i!', ii.width * 0.5 - (ii.height / 12), (ii.height / 2));
+
+    for (var i = 4; i <= 6; i++) {
+      for (var j = 0; j < i; j++) {
+        ii.drawAntialiasedCircle(
+          ii.width * 0.1 + j * ii.circleSpacing * (4 / i) + ii.circleSpacing * (4 / i) / 2,
+          ii.height / 2 + (i - 3) * ii.circleSpacing - ii.circleSpacing / (4 / (i - 5)) - ii.circleSpacing / 2,
+          ii.circleRadius * (4 / i),
+          (j % 2) ? ii.hotColor : ii.coldColor,
+          'white',
+          (j % 2) ?
+            ii.alphaSpacing * (0.5 + 0.5 * Math.sin(2.0 * Math.PI * (ii.currentTimeframe * (i + j / 100) / 500))) :
+            ii.alphaSpacing * (0.5 + 0.5 * Math.cos(2.0 * Math.PI * (ii.currentTimeframe * (i + j / 100) / 500)))
+        );
+      }
+    }
+  },
+
+  render: function() {
+    'use strict';
+
+    if (ii.currentStage == 'title') {
+      return ii.renderTitleScreen();
+    }
+
+    if (ii.currentStage == 'game') {
+      return ii.renderGameScreen();
     }
   },
 
