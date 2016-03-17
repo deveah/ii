@@ -323,7 +323,7 @@ var ii = {
   updateLevelSize: function(levelSize) {
     ii.levelSize = levelSize;
     ii.circleSpacing = Math.floor(ii.width / (ii.levelSize + 1));
-    ii.alphaSpacing = ii.circleSpacing * 3;
+    ii.alphaSpacing = ii.circleSpacing * 2;
     ii.circleRadius = Math.floor(ii.circleSpacing * 0.35);
     ii.stageOffsetX = Math.floor(ii.width / (ii.levelSize + 1)); //+ (ii.levelSize - 4) * ii.circleSpacing;
     ii.stageOffsetY = Math.floor(ii.height * 0.25) + ii.circleRadius;
