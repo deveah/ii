@@ -14,7 +14,7 @@ var ii = {
   levelSize: 4,
   tempPointId: null,
 
-  height: 640,
+  height: 854,
   width: 480,
   ratio: null,
 
