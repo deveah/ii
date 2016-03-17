@@ -14,8 +14,8 @@ var ii = {
   levelSize: 4,
   tempPointId: null,
 
-  height: 576,
-  width: 1024,
+  height: 640,
+  width: 480,
   ratio: null,
 
   currentWidth: null,
@@ -358,7 +358,7 @@ var ii = {
       var yValues = [];
 
       for (var i = 4; i < 8; i++) {
-        yValues[i - 4] = ii.height / 2
+        yValues[i - 4] = ii.currentHeight / 2
           + (i - 3) * ii.circleSpacing
           - ii.circleSpacing / (4 / (i - 5))
           - ii.circleSpacing;
@@ -498,7 +498,8 @@ var ii = {
     'use strict';
 
     ii.currentHeight = window.innerHeight;
-    ii.currentWidth = ii.currentHeight * ii.ratio;
+    ii.currentWidth  = ii.currentHeight * ii.ratio;
+
     ii.canvas.style.height = ii.currentHeight + 'px';
     ii.canvas.style.width  = ii.currentWidth  + 'px';
   },
