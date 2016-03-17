@@ -14,8 +14,8 @@ var ii = {
   levelSize: 4,
   tempPointId: null,
 
-  height: 480,
-  width: 320,
+  height: 576,
+  width: 1024,
   ratio: null,
 
   currentWidth: null,
@@ -499,8 +499,8 @@ var ii = {
 
     ii.currentHeight = window.innerHeight;
     ii.currentWidth = ii.currentHeight * ii.ratio;
-    ii.canvas.style.width = ii.currentWidth + ' px';
-    ii.canvas.style.height = ii.currentHeight + ' px';
+    ii.canvas.style.height = ii.currentHeight + 'px';
+    ii.canvas.style.width  = ii.currentWidth  + 'px';
   },
 
   loop: function() {
