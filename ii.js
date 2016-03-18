@@ -423,6 +423,7 @@ var ii = {
         }
 
         setTimeout(function() {
+          ii.updateLevelSize(4); /* title screen uses 4x4 table circle size references, this is a hack */
           ii.currentStage = 'title';
         }, 500);
       } else {
