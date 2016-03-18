@@ -1,11 +1,23 @@
 body {
   margin: 0;
   padding: 0;
-  background: black;
+  background: white;
 }
 
 canvas {
   display: block;
   margin: 0 auto;
   background: white;
+}
+
+.copyright {
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  text-align: center;
+  color: #7c7c7c;
+}
+
+a {
+  text-decoration: none;
+  color: #3c5288;
 }
