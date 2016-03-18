@@ -388,7 +388,8 @@ var ii = {
         return;
       }
 
-      var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
+      var x = (event.center.x - ii.canvas.offsetLeft) * (ii.width / ii.currentWidth);
+      var col = Math.floor((x - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'up');
 
@@ -400,7 +401,8 @@ var ii = {
         return;
       }
 
-      var col = Math.floor((event.center.x - ii.canvas.offsetLeft - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
+      var x = (event.center.x - ii.canvas.offsetLeft) * (ii.width / ii.currentWidth);
+      var col = Math.floor((x - ii.stageOffsetX + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveColumn(col, 'down');
 
@@ -412,7 +414,8 @@ var ii = {
         return;
       }
 
-      var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
+      var y = (event.center.y - ii.canvas.offsetTop) * (ii.height / ii.currentHeight);
+      var row = Math.floor((y - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'left');
 
@@ -424,7 +427,8 @@ var ii = {
         return;
       }
 
-      var row = Math.floor((event.center.y - ii.canvas.offsetTop - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
+      var y = (event.center.y - ii.canvas.offsetTop) * (ii.height / ii.currentHeight);
+      var row = Math.floor((y - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
       ii.updatePoints();
       ii.moveRow(row, 'right');
 
