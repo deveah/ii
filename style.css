@@ -10,10 +10,13 @@ canvas {
   background: white;
 }
 
-.copyright {
+.howto {
+  margin: 0 auto;
+  padding: 0 auto;
+  max-width: 25vw;
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
-  text-align: center;
+  text-align: justify;
   color: #7c7c7c;
 }
 
