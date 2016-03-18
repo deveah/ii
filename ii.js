@@ -416,10 +416,21 @@ var ii = {
 
       var y = (event.center.y - ii.canvas.offsetTop) * (ii.height / ii.currentHeight);
       var row = Math.floor((y - ii.stageOffsetY + ii.circleSpacing/2) / ii.circleSpacing);
-      ii.updatePoints();
-      ii.moveRow(row, 'left');
 
-      ii.checkWin();
+      if (row >= ii.levelSize) {
+        for (var i = 0; i < ii.points.length; i++) {
+          ii.points[i].setAlphaDestination(0, 1);
+        }
+
+        setTimeout(function() {
+          ii.currentStage = 'title';
+        }, 500);
+      } else {
+        ii.updatePoints();
+        ii.moveRow(row, 'left');
+
+        ii.checkWin();
+      }
     });
 
     Hammertime.on('swiperight', function(event) {
@@ -536,7 +547,7 @@ var ii = {
 
     ii.ctx.fillStyle = 'black';
     ii.ctx.font = (ii.height / 6) + 'px Open Sans';
-    ii.ctx.fillText('i!', ii.width * 0.5 - (ii.height / 24), (ii.height / 5.5));
+    ii.ctx.fillText('¡!', ii.width * 0.5 - (ii.height / 24), (ii.height / 5.5));
 
     for (var i = 0; i < ii.points.length; i++) {
       ii.points[i].draw();
@@ -550,7 +561,7 @@ var ii = {
 
     ii.ctx.fillStyle = 'black';
     ii.ctx.font = (ii.height / 3) + 'px Open Sans';
-    ii.ctx.fillText('i!', ii.width * 0.5 - (ii.height / 12), (ii.height / 2));
+    ii.ctx.fillText('¡!', ii.width * 0.5 - (ii.height / 12), ii.height * 0.4);
 
     for (var i = 4; i <= 6; i++) {
       for (var j = 0; j < i; j++) {
